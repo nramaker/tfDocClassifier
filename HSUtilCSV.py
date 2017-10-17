@@ -1,4 +1,5 @@
 import pandas as pd 
+import random
 
 def load_file(csv):
     dataframe = pd.read_csv(csv)
@@ -29,46 +30,48 @@ def append_to_dataframe(dataframe, features, label):
     dataframe = dataframe.append(new_df, ignore_index=True)
     return dataframe
 
-def generate_random(original, deviation):
+def generate_random(original, deviation, i):
     new_df = create_feature_df()
     index = len(new_df)
 
-    new_df = new_df.set_value(index,'label', original['label'])
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'product_ids',original['product_ids']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'numbers', original['numbers']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'invoice_ids',original['invoice_ids']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'nouns',original['nouns']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'verbs',original['verbs']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'adjectives',original['adjectives']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'conjunctions',original['conjunctions']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'small_blocks',original['small_blocks']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'med_blocks', original['med_blocks']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'large_blocks', original['large_blocks']*(1+random))
-    random=random.randrange(-deviation,deviation)
-    new_df.set_value(index,'total_words',original['total_words']*(1+random))
+
+    new_df = new_df.set_value(index,'label', original.get_value(i,'label'))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'product_ids',original.get_value(i,'product_ids')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'numbers', original.get_value(i,'numbers')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'invoice_ids',original.get_value(i,'invoice_ids')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'nouns',original.get_value(i,'nouns')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'verbs',original.get_value(i,'verbs')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'adjectives',original.get_value(i,'adjectives')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'conjunctions',original.get_value(i,'conjunctions')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'small_blocks',original.get_value(i,'small_blocks')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'med_blocks', original.get_value(i,'med_blocks')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'large_blocks', original.get_value(i,'large_blocks')*(1+r))
+    r=random.uniform(-deviation,deviation)
+    new_df.set_value(index,'total_words',original.get_value(i,'total_words')*(1+r))
 
     return new_df
 
-def fill_random(dataframe, size, deviation=0.1):
+def fill_random(dataframe, size, deviation=0.3):
     original_size = len(dataframe)
     if original_size==0:
         print("Don't call fill_random with an empty dataframe!")
         return dataframe
-    while len(dataframe < size):
-        random_index = random.randint(0, original_size)
-        print("selecting row", random_index)
-        df_sample = dataframe[random_index]
-        print(df_sample)
-        df_new = generate_random(df_sample, deviation)
-        dataframe = dataframe.append(new_df, ignore_index=True)
+    while len(dataframe) < size:
+        random_index = random.randint(1, original_size)
+        #print("selecting row", random_index)
+        df_sample = dataframe.iloc[random_index-1:random_index]
+        #print(df_sample)
+        df_new = generate_random(df_sample, deviation, random_index-1)
+        print(df_new)
+        dataframe = dataframe.append(df_new, ignore_index=True)
     return dataframe
