@@ -3,7 +3,6 @@ from google.cloud.vision import types
 import io
 
 def get_text_from_google(path):
-    print("### get_text_from_google")
     client = vision.ImageAnnotatorClient()
 
     with io.open(path, 'rb') as image_file:
@@ -34,7 +33,6 @@ def get_text_from_google(path):
 
 
 def collect_text_areas(document):
-    print("### collect_text_areas")
     areas = []
     for page in document.pages:
         for block in page.blocks:

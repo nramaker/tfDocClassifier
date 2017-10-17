@@ -3,9 +3,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem.snowball import SnowballStemmer
 
-def test():
-    print("### TEST TEST TEST")
-
 #Methods related to Tokenization
 def tokenize_alpha_num(text):
     tokenizer = RegexpTokenizer(r'\w+')
@@ -72,16 +69,9 @@ def recognize_my_items(tokens):
     return recognized_tokens, count_prod, count_invoice
 
 def tokenize(text):
-    print("### tokenize")
     tokens = tokenize_alpha_num(text)
     tokens = remove_stop_words(tokens)
-    numbers = count_digits(tokens)
-    tokens = remove_short_words(tokens, 3)
-    return tokens, numbers
-
-
-def stem_and_tag(tokens):
-    print("### stem_and_tag")
+    #tokens = remove_short_words(tokens, 3)
     return tokens
     
 def remove_digits(tokens):
@@ -105,12 +95,10 @@ def is_product_id(token):
 
 def is_invoice_id(token):
     if len(token)==7 and token[:3]=='INV' and token[3:].isdigit():
-        print("INVOICE!",token)
         return True
     return False
 
 def recognize_my_items(tokens):
-    print("### recognize_my_items")
     recognized_tokens=[]
     count_prod=0
     count_invoice=0
@@ -119,7 +107,7 @@ def recognize_my_items(tokens):
             recognized_tokens.append("PRODUCTID")
             count_prod+=1
         elif is_invoice_id(t):
-            print("RECOGNIZED INVOICE!")
+
             recognized_tokens.append("INVOICEID")
             count_invoice+=1
         else:
@@ -127,7 +115,6 @@ def recognize_my_items(tokens):
     return recognized_tokens, count_prod, count_invoice
 
 def tokenize(text):
-    print("### tokenize")
     tokens = tokenize_alpha_num(text)
     tokens = remove_stop_words(tokens)
     numbers = count_digits(tokens)
@@ -136,37 +123,42 @@ def tokenize(text):
 
 
 def stem_and_tag(tokens):
-    print("### stem_and_tag")
-    return tokens
+    stemmer = SnowballStemmer("english")
+    stemmed_tokens = []
+    for t in tokens:
+        stemmed_tokens.append(stemmer.stem(t))
+    
+    tagged = nltk.pos_tag(stemmed_tokens)
+    tagged_dict = combine_tokens(tagged)
+    return stemmed_tokens, tagged_dict
 
-def extract_features(image):
-    print("### extract features")
-    
-    #Call Google API
-    google_detection= get_text_from_google(image)
-    text_areas = collect_text_areas(google_detection)
-    count_low, count_med, count_high = count_text_areas_by_size(text_areas)
-    
-    #Tokenize and turn into Features
-    text = google_detection.text
-    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
-    text
-    
-    tokens, numbers = tokenize(text)
-    total_len = len(tokens)
-    tokens, count_prod, count_invoice = recognize_my_items(tokens)
-    tokens = stem_and_tag(tokens)
-    
-    features = {}
-    features["product_ids"]=count_prod
-    features['numbers'] = numbers
-    features['invoice_ids']=count_invoice
-    features['dates']=0
-    features['addresses']=0
-    features['nouns']=0
-    features['verbs']=0
-    features['small_blocks']=count_low
-    features['med_blocks']=count_med
-    features['large_blocks']=count_high
-    features['total_words']=total_len
-    return features
+def combine_tokens(tokens):
+    dict = {}
+    for t in tokens:
+        count = 1
+        if t in dict.keys():
+            count = dict[t] + 1
+        dict[t] = count
+    return dict
+
+def count_types(token_counts):
+    nouns = 0
+    verbs = 0
+    adjectives = 0
+    conjunctions = 0
+    numerical = 0
+    for key, value in token_counts.iteritems():
+        type = key[1]
+        if len(type)>=2 and type[:2]=="NN":
+            nouns+=value
+        elif len(type)>=2 and type[:2]=="JJ":
+            adjectives+=value
+        elif len(type)>=1 and type[:1]=="V":
+            verbs+=value
+        elif len(type)>=2 and type[:2]=="CC":
+            conjunctions+=value
+        elif len(type)>=2 and type[:2]=="CD":
+            numerical+=value
+        else:
+            print("unknown type", type)
+    return nouns, verbs, adjectives, conjunctions, numerical
