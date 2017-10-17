@@ -159,6 +159,6 @@ def count_types(token_counts):
             conjunctions+=value
         elif len(type)>=2 and type[:2]=="CD":
             numerical+=value
-        else:
-            print("unknown type", type)
+        #else:
+        #    print("unknown type", type)
     return nouns, verbs, adjectives, conjunctions, numerical

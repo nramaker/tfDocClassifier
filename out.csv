@@ -1,2 +1,12 @@
-,adjectives,conjunction,conjunctions,invoice_ids,label,large_blocks,med_blocks,nouns,numbers,product_ids,small_blocks,total_words,verbs
-0,14,,1.0,1,invoice,6,11,59,19,5,28,105,6
+,label,product_ids,numbers,invoice_ids,nouns,verbs,adjectives,conjunctions,small_blocks,med_blocks,large_blocks,total_words
+0,invoice,0,15,0,21,6,7,0,12,13,2,50
+1,invoice,0,12,0,26,2,9,0,14,5,4,50
+2,invoice,0,18,0,51,11,15,0,23,6,5,100
+3,invoice,0,9,0,26,3,7,0,21,9,2,47
+4,invoice,0,8,0,33,7,11,0,15,6,4,59
+5,invoice,0,14,0,36,4,10,0,21,8,3,64
+6,email,0,2,0,82,13,35,0,1,4,12,142
+7,email,0,8,0,137,23,37,1,6,6,7,220
+8,email,0,6,0,44,12,13,0,0,3,6,77
+9,email,0,10,0,59,8,11,0,0,4,6,92
+10,email,0,6,0,75,23,12,0,4,9,10,126
