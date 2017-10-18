@@ -1,26 +1,38 @@
 import tensorflow as tf
 
+already_initialized=False
+sess = tf.Session()
+
+#Tensorflow placeholder (the tensors to hold our data)
+x = tf.placeholder(tf.float32, [None, 11])
+
+#Weights
+W = tf.Variable(tf.zeros([11,2]))
+
+#biases
+b = tf.Variable(tf.zeros([2]))
+
+#activation function
+y_values = tf.add(tf.matmul(x, W), b)
+y= tf.nn.softmax(y_values)
+
+#Tensorflow placeholder (the tensor to hold our labels)
+y_ = tf.placeholder(tf.float32, [None,2])
+
 def classify(features, labels):
-    sess = tf.Session()
+    global already_initialized
+    global sess
+    global x
+    global W 
+    global b 
+    global y_values 
+    global y
+    
 
-    #Tensorflow placeholder (the tensors to hold our data)
-    x = tf.placeholder(tf.float32, [None, 11])
-
-    #Weights
-    W = tf.Variable(tf.zeros([11,2]))
-
-    #biases
-    b = tf.Variable(tf.zeros([2]))
-
-    #activation function
-    y_values = tf.add(tf.matmul(x, W), b)
-    y= tf.nn.softmax(y_values)
-
-    #Tensorflow placeholder (the tensor to hold our labels)
-    y_ = tf.placeholder(tf.float32, [None,2])
-
-    saver = tf.train.Saver()
-    saver.restore(sess, "./models/classifier.ckpt")
+    if already_initialized == False:
+        saver = tf.train.Saver()
+        saver.restore(sess, "./models/classifier.ckpt")
+        already_initialized=True
 
     input_data = format_features(features)
     prediction = sess.run(y, feed_dict={x: input_data})[0]

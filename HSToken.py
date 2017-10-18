@@ -2,6 +2,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import RegexpTokenizer
 from nltk.stem.snowball import SnowballStemmer
+import unicodedata 
+import HSGoogleHelper as googleAPI
 
 #Methods related to Tokenization
 def tokenize_alpha_num(text):
@@ -162,3 +164,35 @@ def count_types(token_counts):
         #else:
         #    print("unknown type", type)
     return nouns, verbs, adjectives, conjunctions, numerical
+
+def extract_features(image):
+    
+    #Call Google API
+    google_detection= googleAPI.get_text_from_google(image)
+    text_areas = googleAPI.collect_text_areas(google_detection)
+    count_low, count_med, count_high = googleAPI.count_text_areas_by_size(text_areas)
+    
+    #Tokenize and turn into Features
+    text = google_detection.text
+    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore')
+    
+    tokens, numbers = tokenize(text)
+    total_len = len(tokens)
+    tokens, count_prod, count_invoice = recognize_my_items(tokens)
+    stemmed_tokens, tagged_tokens = stem_and_tag(tokens)
+
+    nouns, verbs, adjectives, conjunctions, numbers = count_types(tagged_tokens)
+    
+    features = {}
+    features["product_ids"]=count_prod
+    features['numbers'] = numbers
+    features['invoice_ids']=count_invoice
+    features['nouns']=nouns
+    features['verbs']=verbs
+    features['adjectives']= adjectives
+    features['conjunctions']= conjunctions
+    features['small_blocks']=count_low
+    features['med_blocks']=count_med
+    features['large_blocks']=count_high
+    features['total_words']=total_len
+    return features, text
